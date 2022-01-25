@@ -150,4 +150,53 @@ subtest_buffered 'addresses' => sub {
         'delete_firewall_address ok');
 };
 
+subtest_buffered 'services' => sub {
+    is($fortimanager->list_firewall_services,
+        bag {
+            all_items hash {
+                field 'name'        => D();
+                field 'protocol'    => D();
+
+                etc();
+            };
+
+            end();
+        },
+        'list_firewall_services ok');
+
+    ok($fortimanager->create_firewall_service('test_tcp_1234', {
+        protocol        => 'TCP/UDP/SCTP',
+        'tcp-portrange' => '1234'
+    }), 'create_firewall_service for TCP service ok');
+
+    ok($fortimanager->create_firewall_service('test_udp_1234', {
+        protocol        => 'TCP/UDP/SCTP',
+        'udp-portrange' => '1234'
+    }), 'create_firewall_service for UDP service ok');
+
+    ok($fortimanager->create_firewall_service('test_icmp_echo', {
+        protocol        => 'ICMP',
+        icmptype        => '8'
+    }), 'create_firewall_service for ICMP service ok');
+
+    is($fortimanager->get_firewall_service('test_tcp_1234'),
+        hash {
+            field 'protocol'        => 5;
+            field 'tcp-portrange'   => array {
+                item '1234';
+
+                end();
+            };
+
+            etc();
+        }, 'get_firewall_service for TCP service ok');
+
+    ok($fortimanager->update_firewall_service('test_tcp_1234', {
+        'tcp-portrange' => '12345'
+    }), 'update_firewall_service for TCP service ok');
+
+    ok($fortimanager->delete_firewall_service('test_tcp_1234'),
+        'delete_firewall_service ok');
+};
+
 done_testing();

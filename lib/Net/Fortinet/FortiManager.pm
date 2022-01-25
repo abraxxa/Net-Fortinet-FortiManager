@@ -336,4 +336,84 @@ sub delete_firewall_address ($self, $name) {
         '/obj/firewall/address/' . $name);
 }
 
+=method list_firewall_services
+
+Returns an arrayref of firewall services.
+
+=cut
+
+sub list_firewall_services ($self, $params = {}) {
+    $self->exec_method('get', '/pm/config/adom/' . $self->adom .
+        '/obj/firewall/service/custom', $params);
+}
+
+=method get_firewall_service
+
+Takes a firewall service name and an optional parameter hashref.
+
+Returns its data as a hashref.
+
+=cut
+
+sub get_firewall_service ($self, $name, $params = {}) {
+    $self->exec_method('get', '/pm/config/adom/' . $self->adom .
+        '/obj/firewall/service/custom/'. $name, $params);
+}
+
+=method create_firewall_service
+
+Takes a firewall service name and a hashref of service config.
+
+Returns true on success.
+
+Throws an exception on error.
+
+=cut
+
+sub create_firewall_service ($self, $name, $data) {
+    my $params = {
+        data => [{
+            $data->%*,
+            name => $name,
+        }],
+    };
+    $self->exec_method('set', '/pm/config/adom/' . $self->adom .
+        '/obj/firewall/service/custom', $params);
+}
+
+=method update_firewall_service
+
+Takes a firewall service name and a hashref of service config.
+
+Returns true on success.
+
+Throws an exception on error.
+
+=cut
+
+sub update_firewall_service ($self, $name, $data) {
+    my $params = {
+        data => {
+            $data->%*,
+        },
+    };
+    $self->exec_method('update', '/pm/config/adom/' . $self->adom .
+        '/obj/firewall/service/custom/' . $name, $params);
+}
+
+=method delete_firewall_service
+
+Takes a firewall service name.
+
+Returns true on success.
+
+Throws an exception on error.
+
+=cut
+
+sub delete_firewall_service ($self, $name) {
+    $self->exec_method('delete', '/pm/config/adom/' . $self->adom .
+        '/obj/firewall/service/custom/' . $name);
+}
+
 1;
