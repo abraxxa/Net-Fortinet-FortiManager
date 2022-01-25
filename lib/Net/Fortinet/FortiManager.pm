@@ -336,6 +336,86 @@ sub delete_firewall_address ($self, $name) {
         '/obj/firewall/address/' . $name);
 }
 
+=method list_firewall_ipv6_addresses
+
+Returns an arrayref of firewall IPv6 addresses.
+
+=cut
+
+sub list_firewall_ipv6_addresses ($self, $params = {}) {
+    $self->exec_method('get', '/pm/config/adom/' . $self->adom .
+        '/obj/firewall/address6', $params);
+}
+
+=method get_firewall_ipv6_address
+
+Takes a firewall IPv6 address name and an optional parameter hashref.
+
+Returns its data as a hashref.
+
+=cut
+
+sub get_firewall_ipv6_address ($self, $name, $params = {}) {
+    $self->exec_method('get', '/pm/config/adom/' . $self->adom .
+        '/obj/firewall/address6/'. $name, $params);
+}
+
+=method create_firewall_ipv6_address
+
+Takes a firewall IPv6 address name and a hashref of address config.
+
+Returns true on success.
+
+Throws an exception on error.
+
+=cut
+
+sub create_firewall_ipv6_address ($self, $name, $data) {
+    my $params = {
+        data => [{
+            $data->%*,
+            name => $name,
+        }],
+    };
+    $self->exec_method('set', '/pm/config/adom/' . $self->adom .
+        '/obj/firewall/address6', $params);
+}
+
+=method update_firewall_ipv6_address
+
+Takes a firewall IPv6 address name and a hashref of address config.
+
+Returns true on success.
+
+Throws an exception on error.
+
+=cut
+
+sub update_firewall_ipv6_address ($self, $name, $data) {
+    my $params = {
+        data => {
+            $data->%*,
+        },
+    };
+    $self->exec_method('update', '/pm/config/adom/' . $self->adom .
+        '/obj/firewall/address6/' . $name, $params);
+}
+
+=method delete_firewall_ipv6_address
+
+Takes a firewall IPv6 address name.
+
+Returns true on success.
+
+Throws an exception on error.
+
+=cut
+
+sub delete_firewall_ipv6_address ($self, $name) {
+    $self->exec_method('delete', '/pm/config/adom/' . $self->adom .
+        '/obj/firewall/address6/' . $name);
+}
+
 =method list_firewall_services
 
 Returns an arrayref of firewall services.

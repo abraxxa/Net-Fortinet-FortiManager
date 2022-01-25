@@ -150,6 +150,55 @@ subtest_buffered 'addresses' => sub {
         'delete_firewall_address ok');
 };
 
+subtest_buffered 'IPv6 addresses' => sub {
+    is($fortimanager->list_firewall_ipv6_addresses,
+        bag {
+            all_items hash {
+                field 'name'    => D();
+                field 'type'    => D();
+
+                etc();
+            };
+
+            end();
+        },
+        'list_firewall_ipv6_addresses ok');
+
+    ok($fortimanager->create_firewall_ipv6_address('host_v6_test1', {
+        ip6 => '2001:db8::a/128',
+    }), 'create_firewall_ipv6_address for host ok');
+
+    ok($fortimanager->create_firewall_ipv6_address('net_v6_test1', {
+        ip6 => '2001:db8::0/64',
+    }), 'create_firewall_ipv6_address for network ok');
+
+    ok($fortimanager->create_firewall_ipv6_address('range_v6_test1', {
+        'start-ip'  => '2001:db8::a',
+        'end-ip'    => '2001:db8::14',
+        type        => 'iprange',
+    }), 'create_firewall_ipv6_address for range ok');
+
+    ok($fortimanager->create_firewall_ipv6_address('fqdn_v6_acme.example.net', {
+        fqdn    => 'acme.example.net',
+        type    => 'fqdn',
+    }), 'create_firewall_ipv6_address for FQDN ok');
+
+    is($fortimanager->get_firewall_ipv6_address('fqdn_v6_acme.example.net'),
+        hash {
+            field 'fqdn'    => 'acme.example.net';
+            field 'type'    => 4;
+
+            etc();
+        }, 'get_firewall_ipv6_address for FQDN ok');
+
+    ok($fortimanager->update_firewall_ipv6_address('range_v6_test1', {
+        'end-ip'    => '2001:db8::1d',
+    }), 'update_firewall_ipv6_address for range ok');
+
+    ok($fortimanager->delete_firewall_ipv6_address('range_v6_test1'),
+        'delete_firewall_ipv6_address ok');
+};
+
 subtest_buffered 'services' => sub {
     is($fortimanager->list_firewall_services,
         bag {
