@@ -137,7 +137,7 @@ subtest_buffered 'IPv4 objects' => sub {
     is($fortimanager->get_firewall_address('fqdn_acme.example.net'),
         hash {
             field 'fqdn'    => 'acme.example.net';
-            field 'type'    => 2;
+            field 'type'    => 'fqdn';
 
             etc();
         }, 'get_firewall_address for FQDN ok');
@@ -178,7 +178,7 @@ subtest_buffered 'IPv4 address groups' => sub {
     is($fortimanager->get_firewall_address_group('grp_test1'),
         hash {
             field 'name'    => 'grp_test1';
-            field 'type'    => 3;
+            field 'type'    => 'default';
             field 'member'  => bag {
                 item 'host_test1';
                 item 'net_test1';
@@ -237,7 +237,7 @@ subtest_buffered 'IPv6 objects' => sub {
     is($fortimanager->get_firewall_ipv6_address('fqdn_v6_acme.example.net'),
         hash {
             field 'fqdn'    => 'acme.example.net';
-            field 'type'    => 4;
+            field 'type'    => 'fqdn';
 
             etc();
         }, 'get_firewall_ipv6_address for FQDN ok');
@@ -330,7 +330,7 @@ subtest_buffered 'service objects' => sub {
 
     is($fortimanager->get_firewall_service('test_tcp_1234'),
         hash {
-            field 'protocol'        => 5;
+            field 'protocol'        => 'TCP/UDP/SCTP';
             field 'tcp-portrange'   => array {
                 item '1234';
 

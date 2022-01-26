@@ -36,6 +36,8 @@ no warnings "experimental::signatures";
 This module is a client library for the Fortigate FortiManager JSONRPC-like
 API.
 Currently it is developed and tested against version 6.4.6.
+All requests have the verbose parameter set to 1 to ensure that enums return
+their strings instead of undocumented ids.
 
 =for Pod::Coverage has_user has_passwd has_api_key
 
@@ -146,6 +148,7 @@ sub _exec_method ($self, $method, $params = undef) {
         id      => $self->_get_transaction_id,
         method  => $method,
         params  => $params,
+        verbose => 1,
     };
     $body->{session} = $self->_sessionid
         if $self->_has_sessionid;
