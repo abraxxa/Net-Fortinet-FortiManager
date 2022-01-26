@@ -8,7 +8,7 @@ use feature 'signatures';
 use Types::Standard qw( ArrayRef HashRef InstanceOf Str );
 use Types::Common::Numeric qw( PositiveInt );
 use Carp qw( croak );
-use List::Util qw( all );
+use List::Util qw( all any );
 
 no warnings "experimental::signatures";
 
@@ -122,16 +122,30 @@ sub _http_error_handler ($self, $res) {
         unless $res->code == 200;
 }
 
-sub _rpc_error_handler ($self, $res) {
+sub _rpc_error_handler ($self, $res, $number_of_expected_results) {
     if (ref $res->data eq 'HASH'
         && exists $res->data->{result}
         && ref $res->data->{result} eq 'ARRAY'
-        && scalar $res->data->{result}->@* == 1
-        && ref $res->data->{result}->[0] eq 'HASH' ) {
-        my $code = $res->data->{result}->[0]->{status}->{code};
-        my $message = $res->data->{result}->[0]->{status}->{message};
-        if ($code != 0) {
-            croak("jsonrpc error ($code): $message");
+        && scalar $res->data->{result}->@* == $number_of_expected_results
+        && all { ref $_ eq 'HASH' } $res->data->{result}->@* ) {
+        if ($number_of_expected_results == 1) {
+            my $code = $res->data->{result}->[0]->{status}->{code};
+            my $message = $res->data->{result}->[0]->{status}->{message};
+            if ($code != 0) {
+                croak("jsonrpc error ($code): $message");
+            }
+        }
+        else {
+            my @failed_calls = grep {
+                $_->{status}->{code} != 0
+            } $res->data->{result}->@*;
+
+            if (@failed_calls) {
+                croak("jsonrpc errors: " . join(', ', map {
+                    $_->{url} . ': (' . $_->{status}->{code} . ') ' .
+                    $_->{status}->{message}
+                } @failed_calls));
+            }
         }
     }
     else {
@@ -159,7 +173,7 @@ sub _exec_method ($self, $method, $params = undef) {
 
     $self->_http_error_handler($res);
 
-    $self->_rpc_error_handler($res);
+    $self->_rpc_error_handler($res, defined $params ? scalar $params->@* : 1);
 
     return $res;
 }
@@ -191,6 +205,36 @@ sub exec_method ($self, $method, $url, $params = undef) {
     # called in _exec_method
     if (exists $rv->{result}[0]->{data}) {
         return $rv->{result}[0]->{data};
+    }
+    return 1;
+}
+
+=method exec_method_multi
+
+Executes a method with multiple specified parameters.
+
+Returns its responses.
+
+This is also a low level method which can be used to execute multiple API
+actions in a single JSONRPC call.
+The only restriction of the JSONRPC API is that all actions need to use the
+same method.
+It does the http and JSONRPC error handling and extraction of the results
+from the JSONRPC response.
+
+=cut
+
+sub exec_method_multi ($self, $method, $params) {
+    croak 'params needs to be an arrayref'
+        unless ref $params eq 'ARRAY';
+
+    croak 'each parameter needs to be a hashref'
+        unless any { ref $_ eq 'HASH' } $params->@*;
+
+    my $rv = $self->_exec_method($method, $params)->data;
+
+    if (exists $rv->{result}) {
+        return $rv->{result};
     }
     return 1;
 }

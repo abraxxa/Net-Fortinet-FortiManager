@@ -90,6 +90,67 @@ is($fortimanager->exec_method('get',
         };
     }, 'exec_method with parameters response ok');
 
+is($fortimanager->exec_method_multi('get',
+    [{
+        fields  => [qw( name type )],
+        url     => '/pm/config/adom/root/obj/firewall/address',
+    }, {
+        fields  => [qw( name protocol )],
+        url     => '/pm/config/adom/root/obj/firewall/service/custom',
+    }]),
+    bag {
+        all_items hash {
+            field 'data' => bag {
+                all_items hash {
+                    field 'name' => D();
+
+                    etc();
+                };
+
+                etc();
+            };
+
+            field 'status' => hash {
+                etc();
+            };
+
+            field 'url' => D();
+
+            end();
+        };
+
+        # test if results are returned in request order
+
+        item hash {
+            field 'url' => '/pm/config/adom/root/obj/firewall/address';
+
+            etc();
+        };
+
+        item hash {
+            field 'url' =>  '/pm/config/adom/root/obj/firewall/service/custom';
+
+            etc();
+        };
+
+        end();
+    }, 'exec_method_multi with parameters response ok');
+
+like (
+    dies {
+        $fortimanager->exec_method_multi('get',
+            [{
+                url => '/pm/config/adom/root/obj/firewall/address',
+            }, {
+                url => '/does/not/exist',
+            }, {
+                url => '/does/not/exist/either',
+            }]),
+    },
+    qr#^jsonrpc errors: /does/not/exist: \(-11\) No permission for the resource, /does/not/exist/either: \(-11\) No permission for the resource#,
+    'calling exec_method_multi with a nonexisting url throws correct exception'
+);
+
 is($fortimanager->get_sys_status, hash {
     field 'Hostname'    => D();
     field 'Version'     => D();
