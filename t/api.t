@@ -101,7 +101,7 @@ is($fortimanager->list_adoms, bag {
     all_items D();
 }, 'list_adoms returns arrayref of ADOM names');
 
-subtest_buffered 'addresses' => sub {
+subtest_buffered 'IPv4 objects' => sub {
     is($fortimanager->list_firewall_addresses,
         bag {
             all_items hash {
@@ -150,7 +150,7 @@ subtest_buffered 'addresses' => sub {
         'delete_firewall_address ok');
 };
 
-subtest_buffered 'IPv6 addresses' => sub {
+subtest_buffered 'IPv6 objects' => sub {
     is($fortimanager->list_firewall_ipv6_addresses,
         bag {
             all_items hash {
@@ -199,7 +199,7 @@ subtest_buffered 'IPv6 addresses' => sub {
         'delete_firewall_ipv6_address ok');
 };
 
-subtest_buffered 'services' => sub {
+subtest_buffered 'service objects' => sub {
     is($fortimanager->list_firewall_services,
         bag {
             all_items hash {
