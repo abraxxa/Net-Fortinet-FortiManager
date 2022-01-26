@@ -250,6 +250,55 @@ subtest_buffered 'IPv6 objects' => sub {
         'delete_firewall_ipv6_address ok');
 };
 
+subtest_buffered 'IPv6 address groups' => sub {
+    is($fortimanager->list_firewall_ipv6_address_groups,
+        bag {
+            all_items hash {
+                field 'name' => D();
+                field 'member' => bag{
+                    etc();
+                };
+
+                etc();
+            };
+
+            end();
+        },
+        'list_firewall_ipv6_address_groups ok');
+
+    ok($fortimanager->create_firewall_ipv6_address_group('grp_v6_test1', {
+        member => [qw(
+            host_v6_test1
+            net_v6_test1
+            fqdn_v6_acme.example.net
+        )],
+    }), 'create_firewall_ipv6_address_group ok');
+
+    is(my $rv = $fortimanager->get_firewall_ipv6_address_group('grp_v6_test1'),
+        hash {
+            field 'name'    => 'grp_v6_test1';
+            field 'member'  => bag {
+                item 'host_v6_test1';
+                item 'net_v6_test1';
+                item 'fqdn_v6_acme.example.net';
+
+                end();
+            };
+
+            etc();
+        }, 'get_firewall_ipv6_address_group ok');
+
+    ok($fortimanager->update_firewall_ipv6_address_group('grp_v6_test1', {
+        member => [qw(
+            host_v6_test1
+            fqdn_v6_acme.example.net
+        )],
+    }), 'update_firewall_ipv6_address_group ok');
+
+    ok($fortimanager->delete_firewall_ipv6_address_group('grp_v6_test1'),
+        'delete_firewall_ipv6_address_group ok');
+};
+
 subtest_buffered 'service objects' => sub {
     is($fortimanager->list_firewall_services,
         bag {
