@@ -9,6 +9,7 @@ use Types::Standard qw( ArrayRef HashRef InstanceOf Str );
 use Types::Common::Numeric qw( PositiveInt );
 use Carp qw( croak );
 use List::Util qw( all );
+use JSON::RPC::Common::Marshal::HTTP;
 
 no warnings "experimental::signatures";
 
@@ -81,6 +82,12 @@ sub _get_transaction_id ($self) {
     return $id;
 }
 
+has '_jsonrpc_marshal_http' => (
+    isa     => InstanceOf['JSON::RPC::Common::Marshal::HTTP'],
+    is      => 'ro',
+    default => sub { JSON::RPC::Common::Marshal::HTTP->new },
+);
+
 =attr adoms
 
 Returns a list of hashrefs containing name and uuid of all ADOMs which gets
@@ -115,29 +122,6 @@ with 'Role::REST::Client';
 #     return $response;
 # };
 
-sub _http_error_handler ($self, $res) {
-    croak('http error (' . $res->code . '): ' . $res->response->decoded_content)
-        unless $res->code == 200;
-}
-
-sub _rpc_error_handler ($self, $res) {
-    if (ref $res->data eq 'HASH'
-        && exists $res->data->{result}
-        && ref $res->data->{result} eq 'ARRAY'
-        && scalar $res->data->{result}->@* == 1
-        && ref $res->data->{result}->[0] eq 'HASH' ) {
-        my $code = $res->data->{result}->[0]->{status}->{code};
-        my $message = $res->data->{result}->[0]->{status}->{message};
-        if ($code != 0) {
-            croak("jsonrpc error ($code): $message");
-        }
-    }
-    else {
-        croak "jsonrpc error: response not in expected format: " .
-            $res->response->decoded_content;
-    }
-}
-
 sub _exec_method ($self, $method, $params = undef) {
     croak 'params needs to be an arrayref'
         if defined $params && ref $params ne 'ARRAY';
@@ -154,11 +138,12 @@ sub _exec_method ($self, $method, $params = undef) {
     my $res = $self->post('/jsonrpc', $body);
     # p $res;
 
-    $self->_http_error_handler($res);
+    my $result = $self->_jsonrpc_marshal_http
+        ->response_to_result($res->response);
+    croak $result
+        if $result->has_error;
 
-    $self->_rpc_error_handler($res);
-
-    return $res;
+    return $result;
 }
 
 =method exec_method
@@ -182,7 +167,7 @@ sub exec_method ($self, $method, $url, $params = undef) {
         ? $params->%*
         : ();
     $full_params{url} = $url;
-    my $rv = $self->_exec_method($method, [\%full_params])->data;
+    my $rv = $self->_exec_method($method, [\%full_params])->result;
 
     # the existance of {result}[0] is already verified by _rpc_error_handler
     # called in _exec_method
@@ -210,7 +195,7 @@ sub login ($self) {
         },
     }]);
 
-    $self->_sessionid($res->data->{session});
+    $self->_sessionid($res->result->{session});
 
     $self->_set_adoms($self->list_adoms);
 
