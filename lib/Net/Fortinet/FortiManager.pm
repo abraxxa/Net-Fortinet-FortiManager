@@ -783,4 +783,83 @@ sub delete_firewall_service_group ($self, $name) {
         '/obj/firewall/service/group/' . $name);
 }
 
+=method list_policy_packages
+
+Takes optional parameters.
+
+Returns an arrayref of firewall policies.
+
+=cut
+
+sub list_policy_packages ($self, $params = {}) {
+    $self->exec_method('get', '/pm/pkg/adom/' . $self->adom, $params);
+}
+
+=method get_policy_package
+
+Takes a policy package name and an optional parameter hashref.
+
+Returns its data as a hashref.
+
+=cut
+
+sub get_policy_package ($self, $name, $params = {}) {
+    $self->exec_method('get', '/pm/pkg/adom/' . $self->adom . '/'. $name,
+        $params);
+}
+
+=method create_policy_package
+
+Takes a policy package name and a hashref of attributes.
+
+Returns true on success.
+
+Throws an exception on error.
+
+=cut
+
+sub create_policy_package ($self, $name, $data) {
+    my $params = {
+        data => [{
+            $data->%*,
+            name => $name,
+        }],
+    };
+    $self->exec_method('add', '/pm/pkg/adom/' . $self->adom, $params);
+}
+
+=method update_policy_package
+
+Takes a policy package name and a hashref of attributes.
+
+Returns true on success.
+
+Throws an exception on error.
+
+=cut
+
+sub update_policy_package ($self, $name, $data) {
+    my $params = {
+        data => {
+            $data->%*,
+        },
+    };
+    $self->exec_method('update', '/pm/pkg/adom/' . $self->adom . '/' . $name,
+        $params);
+}
+
+=method delete_policy_package
+
+Takes a policy package name.
+
+Returns true on success.
+
+Throws an exception on error.
+
+=cut
+
+sub delete_policy_package ($self, $name) {
+    $self->exec_method('delete', '/pm/pkg/adom/' . $self->adom . '/' . $name);
+}
+
 1;

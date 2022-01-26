@@ -455,4 +455,56 @@ subtest_buffered 'service groups' => sub {
         'delete_firewall_service_group ok');
 };
 
+subtest_buffered 'policy packages' => sub {
+    ok($fortimanager->create_policy_package(
+        $ENV{NET_FORTINET_FORTIMANAGER_POLICY}, {
+        'package settings'  => {
+            'central-nat'               => 'enable',
+            'fwpolicy-implicit-log'     => 'enable',
+            'fwpolicy6-implicit-log'    => 'enable',
+            'ngfw-mode'                 => 'profile-based',
+        },
+        type                => 'pkg',
+    }), 'create_policy_package ok');
+
+    is($fortimanager->get_policy_package(
+        $ENV{NET_FORTINET_FORTIMANAGER_POLICY}),
+        hash {
+            field 'name'    => $ENV{NET_FORTINET_FORTIMANAGER_POLICY};
+            field 'type'    => 'pkg';
+            field 'package settings' => hash {
+                field 'central-nat'  => 'enable';
+                field 'ngfw-mode'    => 'profile-based';
+
+                etc();
+            };
+
+            etc();
+        }, 'get_policy_package ok');
+
+    ok($fortimanager->update_policy_package(
+        $ENV{NET_FORTINET_FORTIMANAGER_POLICY}, {
+        'package settings'  => {
+            'ngfw-mode'     => 'policy-based',
+        },
+    }), 'update_policy_package ok');
+
+    is($fortimanager->list_policy_packages,
+        bag {
+            all_items hash {
+                field 'name'    => D();
+                field 'type'    => D();
+
+                etc();
+            };
+
+            end();
+        },
+        'list_policy_packages ok');
+
+    ok($fortimanager->delete_policy_package(
+        $ENV{NET_FORTINET_FORTIMANAGER_POLICY}),
+        'delete_policy_package ok');
+};
+
 done_testing();
