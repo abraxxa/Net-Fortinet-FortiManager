@@ -336,6 +336,86 @@ sub delete_firewall_address ($self, $name) {
         '/obj/firewall/address/' . $name);
 }
 
+=method list_firewall_address_groups
+
+Returns an arrayref of firewall address groups.
+
+=cut
+
+sub list_firewall_address_groups ($self, $params = {}) {
+    $self->exec_method('get', '/pm/config/adom/' . $self->adom .
+        '/obj/firewall/addrgrp', $params);
+}
+
+=method get_firewall_address_group
+
+Takes a firewall address group name and an optional parameter hashref.
+
+Returns its data as a hashref.
+
+=cut
+
+sub get_firewall_address_group ($self, $name, $params = {}) {
+    $self->exec_method('get', '/pm/config/adom/' . $self->adom .
+        '/obj/firewall/addrgrp/'. $name, $params);
+}
+
+=method create_firewall_address_group
+
+Takes a firewall address group name and a hashref of address group config.
+
+Returns true on success.
+
+Throws an exception on error.
+
+=cut
+
+sub create_firewall_address_group ($self, $name, $data) {
+    my $params = {
+        data => [{
+            $data->%*,
+            name => $name,
+        }],
+    };
+    $self->exec_method('set', '/pm/config/adom/' . $self->adom .
+        '/obj/firewall/addrgrp', $params);
+}
+
+=method update_firewall_address_group
+
+Takes a firewall address group name and a hashref of address group config.
+
+Returns true on success.
+
+Throws an exception on error.
+
+=cut
+
+sub update_firewall_address_group ($self, $name, $data) {
+    my $params = {
+        data => {
+            $data->%*,
+        },
+    };
+    $self->exec_method('update', '/pm/config/adom/' . $self->adom .
+        '/obj/firewall/addrgrp/' . $name, $params);
+}
+
+=method delete_firewall_address_group
+
+Takes a firewall address group name.
+
+Returns true on success.
+
+Throws an exception on error.
+
+=cut
+
+sub delete_firewall_address_group ($self, $name) {
+    $self->exec_method('delete', '/pm/config/adom/' . $self->adom .
+        '/obj/firewall/addrgrp/' . $name);
+}
+
 =method list_firewall_ipv6_addresses
 
 Returns an arrayref of firewall IPv6 addresses.

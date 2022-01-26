@@ -150,6 +150,57 @@ subtest_buffered 'IPv4 objects' => sub {
         'delete_firewall_address ok');
 };
 
+subtest_buffered 'IPv4 address groups' => sub {
+    is($fortimanager->list_firewall_address_groups,
+        bag {
+            all_items hash {
+                field 'name'    => D();
+                field 'type'    => D();
+                field 'member'  => bag{
+                    etc();
+                };
+
+                etc();
+            };
+
+            end();
+        },
+        'list_firewall_address_groups ok');
+
+    ok($fortimanager->create_firewall_address_group('grp_test1', {
+        member => [qw(
+            host_test1
+            net_test1
+            fqdn_acme.example.net
+        )],
+    }), 'create_firewall_address_group ok');
+
+    is($fortimanager->get_firewall_address_group('grp_test1'),
+        hash {
+            field 'name'    => 'grp_test1';
+            field 'type'    => 3;
+            field 'member'  => bag {
+                item 'host_test1';
+                item 'net_test1';
+                item 'fqdn_acme.example.net';
+
+                end();
+            };
+
+            etc();
+        }, 'get_firewall_address_group ok');
+
+    ok($fortimanager->update_firewall_address_group('grp_test1', {
+        member => [qw(
+            host_test1
+            fqdn_acme.example.net
+        )],
+    }), 'update_firewall_address_group ok');
+
+    ok($fortimanager->delete_firewall_address_group('grp_test1'),
+        'delete_firewall_address_group ok');
+};
+
 subtest_buffered 'IPv6 objects' => sub {
     is($fortimanager->list_firewall_ipv6_addresses,
         bag {
