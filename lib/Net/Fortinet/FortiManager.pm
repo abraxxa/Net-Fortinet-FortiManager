@@ -703,4 +703,84 @@ sub delete_firewall_service ($self, $name) {
         '/obj/firewall/service/custom/' . $name);
 }
 
+=method list_firewall_service_groups
+
+Returns an arrayref of firewall service groups.
+
+=cut
+
+sub list_firewall_service_groups ($self, $params = {}) {
+    $self->exec_method('get', '/pm/config/adom/' . $self->adom .
+        '/obj/firewall/service/group', $params);
+}
+
+=method get_firewall_service_group
+
+Takes a firewall service group name and an optional parameter hashref.
+
+Returns its data as a hashref.
+
+=cut
+
+sub get_firewall_service_group ($self, $name, $params = {}) {
+    $self->exec_method('get', '/pm/config/adom/' . $self->adom .
+        '/obj/firewall/service/group/'. $name, $params);
+}
+
+=method create_firewall_service_group
+
+Takes a firewall service group name and a hashref of service group config.
+
+Returns true on success.
+
+Throws an exception on error.
+
+=cut
+
+sub create_firewall_service_group ($self, $name, $data) {
+    my $params = {
+        data => [{
+            $data->%*,
+            name => $name,
+        }],
+    };
+    $self->exec_method('set', '/pm/config/adom/' . $self->adom .
+        '/obj/firewall/service/group', $params);
+}
+
+=method update_firewall_service_group
+
+Takes a firewall service group name and a hashref of service group config.
+
+Returns true on success.
+
+Throws an exception on error.
+
+=cut
+
+sub update_firewall_service_group ($self, $name, $data) {
+    my $params = {
+        data => {
+            $data->%*,
+        },
+    };
+    $self->exec_method('update', '/pm/config/adom/' . $self->adom .
+        '/obj/firewall/service/group/' . $name, $params);
+}
+
+=method delete_firewall_service_group
+
+Takes a firewall service group name.
+
+Returns true on success.
+
+Throws an exception on error.
+
+=cut
+
+sub delete_firewall_service_group ($self, $name) {
+    $self->exec_method('delete', '/pm/config/adom/' . $self->adom .
+        '/obj/firewall/service/group/' . $name);
+}
+
 1;

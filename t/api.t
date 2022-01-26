@@ -409,4 +409,50 @@ subtest_buffered 'service objects' => sub {
         'delete_firewall_service ok');
 };
 
+subtest_buffered 'service groups' => sub {
+    is($fortimanager->list_firewall_service_groups,
+        bag {
+            all_items hash {
+                field 'name'    => D();
+                field 'member'  => bag {
+                    etc();
+                };
+
+                etc();
+            };
+
+            end();
+        },
+        'list_firewall_service_groups ok');
+
+    ok($fortimanager->create_firewall_service_group('grp_test1', {
+        member => [qw(
+            test_udp_1234
+            test_icmp_echo
+        )],
+    }), 'create_firewall_service_group ok');
+
+    is($fortimanager->get_firewall_service_group('grp_test1'),
+        hash {
+            field 'name'    => 'grp_test1';
+            field 'member'  => bag {
+                item 'test_udp_1234';
+                item 'test_icmp_echo';
+
+                end();
+            };
+
+            etc();
+        }, 'get_firewall_service_group ok');
+
+    ok($fortimanager->update_firewall_service_group('grp_test1', {
+        member => [qw(
+            test_udp_1234
+        )],
+    }), 'update_firewall_service_group ok');
+
+    ok($fortimanager->delete_firewall_service_group('grp_test1'),
+        'delete_firewall_service_group ok');
+};
+
 done_testing();
