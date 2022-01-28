@@ -862,4 +862,89 @@ sub delete_policy_package ($self, $name) {
     $self->exec_method('delete', '/pm/pkg/adom/' . $self->adom . '/' . $name);
 }
 
+=method list_firewall_policies
+
+Takes a package name and optional parameters.
+
+Returns an arrayref of firewall policies.
+
+=cut
+
+sub list_firewall_policies ($self, $pkg, $params = {}) {
+    $self->exec_method('get', '/pm/config/adom/' . $self->adom .
+        '/pkg/' .  $pkg . '/firewall/policy', $params);
+}
+
+=method get_firewall_policy
+
+Takes a policy package name, a firewall policy id and an optional parameter
+hashref.
+
+Returns its data as a hashref.
+
+=cut
+
+sub get_firewall_policy ($self, $pkg, $id, $params = {}) {
+    $self->exec_method('get', '/pm/config/adom/' . $self->adom .
+        '/pkg/' .  $pkg . '/firewall/policy/' . $id, $params);
+}
+
+=method create_firewall_policy
+
+Takes a policy package name and a hashref of firewall policy attributes.
+
+Returns the response data from the API on success which is a hashref
+containing only the policyid.
+
+Throws an exception on error.
+
+=cut
+
+sub create_firewall_policy ($self, $pkg, $data) {
+    my $params = {
+        data => [{
+            $data->%*,
+        }],
+    };
+    $self->exec_method('add', '/pm/config/adom/' . $self->adom .
+        '/pkg/' .  $pkg . '/firewall/policy', $params);
+}
+
+=method update_firewall_policy
+
+Takes a policy package name, a firewall policy id and a hashref of firewall
+policy attributes.
+
+Returns the response data from the API on success which is a hashref
+containing only the policyid.
+
+Throws an exception on error.
+
+=cut
+
+sub update_firewall_policy ($self, $pkg, $id, $data) {
+    my $params = {
+        data => {
+            $data->%*,
+        },
+    };
+    $self->exec_method('update', '/pm/config/adom/' . $self->adom .
+        '/pkg/' .  $pkg . '/firewall/policy/' . $id , $params);
+}
+
+=method delete_firewall_policy
+
+Takes a policy package name and a firewall policy id.
+
+Returns true on success.
+
+Throws an exception on error.
+
+=cut
+
+sub delete_firewall_policy ($self, $pkg, $id) {
+    $self->exec_method('delete', '/pm/config/adom/' . $self->adom .
+        '/pkg/' .  $pkg . '/firewall/policy/' . $id);
+}
+
 1;

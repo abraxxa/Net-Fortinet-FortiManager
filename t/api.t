@@ -482,13 +482,6 @@ subtest_buffered 'policy packages' => sub {
             etc();
         }, 'get_policy_package ok');
 
-    ok($fortimanager->update_policy_package(
-        $ENV{NET_FORTINET_FORTIMANAGER_POLICY}, {
-        'package settings'  => {
-            'ngfw-mode'     => 'policy-based',
-        },
-    }), 'update_policy_package ok');
-
     is($fortimanager->list_policy_packages,
         bag {
             all_items hash {
@@ -501,6 +494,157 @@ subtest_buffered 'policy packages' => sub {
             end();
         },
         'list_policy_packages ok');
+
+    is(my $ipv4_policy = $fortimanager->create_firewall_policy(
+        $ENV{NET_FORTINET_FORTIMANAGER_POLICY}, {
+            action          => 'accept',
+            'global-label'  => 'Section 1',
+            name            => 'policy1_v4',
+            dstaddr         => 'fqdn_acme.example.net',
+            dstintf         => 'any',
+            srcaddr         => 'net_test1',
+            srcintf         => 'any',
+            service         => 'test_udp_1234',
+            status          => 'enable',
+            logtraffic      => 'all',
+            schedule        => 'always',
+    }), hash {
+        field 'policyid' => D();
+
+        end();
+    }, 'create_firewall_policy for IPv4 policy ok');
+
+    is(my $ipv6_policy = $fortimanager->create_firewall_policy(
+        $ENV{NET_FORTINET_FORTIMANAGER_POLICY}, {
+            action          => 'accept',
+            'global-label'  => 'Section 1',
+            name            => 'policy1_v6',
+            dstaddr6        => 'fqdn_v6_acme.example.net',
+            dstintf         => 'any',
+            srcaddr6        => 'net_v6_test1',
+            srcintf         => 'any',
+            service         => 'test_udp_1234',
+            status          => 'enable',
+            logtraffic      => 'all',
+            schedule        => 'always',
+    }), hash {
+        field 'policyid' => D();
+
+        end();
+    }, 'create_firewall_policy for IPv6 policy ok');
+
+    is($fortimanager->get_firewall_policy(
+            $ENV{NET_FORTINET_FORTIMANAGER_POLICY},
+            $ipv4_policy->{policyid},
+        ),
+        hash {
+            field 'policyid'        => $ipv4_policy->{policyid};
+            field 'global-label'    => 'Section 1';
+            field 'status'          => 'enable';
+            field 'action'          => 'accept';
+            field 'logtraffic'      => 'all';
+            field 'schedule'        => bag {
+                item 'always';
+
+                end();
+            };
+            field 'name'            => 'policy1_v4';
+            field 'dstaddr'         => bag {
+                item 'fqdn_acme.example.net';
+
+                end();
+            };
+            field 'dstaddr6'        => bag {
+                etc();
+            };
+            field 'dstintf'         => bag {
+                item 'any';
+
+                end();
+            };
+            field 'srcaddr'         => bag {
+                item 'net_test1';
+
+                end();
+            };
+            field 'srcaddr6'        => bag {
+                etc();
+            };
+            field 'srcintf'         => bag {
+                item 'any';
+
+                end();
+            };
+            field 'service'         => bag {
+                item 'test_udp_1234';
+
+                end();
+            };
+
+            etc();
+        }, 'get_firewall_policy ok');
+
+    is($fortimanager->list_firewall_policies(
+        $ENV{NET_FORTINET_FORTIMANAGER_POLICY}),
+        bag {
+            all_items hash {
+                field 'policyid'        => D();
+                field 'global-label'    => D();
+                field 'status'          => D();
+                field 'action'          => D();
+                field 'logtraffic'      => D();
+                field 'schedule'        => bag {
+                    etc();
+                };
+                field 'name'            => D();
+                field 'dstaddr'         => bag {
+                    etc();
+                };
+                field 'dstaddr6'        => bag {
+                    etc();
+                };
+                field 'dstintf'         => bag {
+                    etc();
+                };
+                field 'srcaddr'         => bag {
+                    etc();
+                };
+                field 'srcaddr6'        => bag {
+                    etc();
+                };
+                field 'srcintf'         => bag {
+                    etc();
+                };
+                field 'service'        => bag {
+                    etc();
+                };
+
+                etc();
+            };
+
+            end();
+        },
+        'list_firewall_policies ok');
+
+    is($fortimanager->update_firewall_policy(
+        $ENV{NET_FORTINET_FORTIMANAGER_POLICY}, $ipv4_policy->{policyid}, {
+            action          => 'deny',
+    }), hash {
+        field 'policyid' => D();
+
+        end();
+    }, 'update_firewall_policy ok');
+
+    ok($fortimanager->delete_firewall_policy(
+        $ENV{NET_FORTINET_FORTIMANAGER_POLICY}, $ipv6_policy->{policyid}),
+        'delete_firewall_policy ok');
+
+    ok($fortimanager->update_policy_package(
+        $ENV{NET_FORTINET_FORTIMANAGER_POLICY}, {
+        'package settings'  => {
+            'ngfw-mode'     => 'policy-based',
+        },
+    }), 'update_policy_package ok');
 
     ok($fortimanager->delete_policy_package(
         $ENV{NET_FORTINET_FORTIMANAGER_POLICY}),
