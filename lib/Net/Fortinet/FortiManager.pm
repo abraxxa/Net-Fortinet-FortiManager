@@ -866,6 +866,28 @@ sub delete_policy_package ($self, $name) {
     $self->exec_method('delete', '/pm/pkg/adom/' . $self->adom . '/' . $name);
 }
 
+=method install_policy_package
+
+Takes a policy package name and a hashref of parameters.
+
+Returns true on success.
+
+Throws an exception on error.
+
+=cut
+
+sub install_policy_package ($self, $name, $data) {
+    my $params = {
+        data => {
+            $data->%*,
+            adom    => $self->adom,
+            pkg     => $name,
+        },
+    };
+    $self->exec_method('exec', '/securityconsole/install/package',
+        $params);
+}
+
 =method list_firewall_policies
 
 Takes a package name and optional parameters.
