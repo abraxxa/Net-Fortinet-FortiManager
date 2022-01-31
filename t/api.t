@@ -782,6 +782,71 @@ subtest_buffered 'policy packages' => sub {
         $ENV{NET_FORTINET_FORTIMANAGER_POLICY}, $ipv6_sec_policy->{policyid}),
         'delete_firewall_security_policy ok');
 
+    my $task_check = hash {
+        field 'adom'        => D();
+        field 'id'          => D();
+        field 'end_tm'      => D();
+        field 'line'        => bag {
+            all_items hash {
+                field 'detail'  => D();
+                field 'end_tm'  => D();
+                field 'err'     => D();
+                field 'history' => bag {
+                    all_items hash {
+                        field 'detail'  => D();
+                        field 'name'    => D();
+                        field 'percent' => D();
+                        field 'vdom'    => E();
+                    };
+
+                    etc();
+                };
+                field 'ip'          => E();
+                field 'name'        => D();
+                field 'oid'         => D();
+                field 'percent'     => D();
+                field 'start_tm'    => D();
+                field 'state'       => D();
+                field 'vdom'        => E();
+
+                etc();
+            };
+
+            etc();
+        };
+        field 'num_done'    => D();
+        field 'num_err'     => D();
+        field 'num_lines'   => D();
+        field 'num_warn'    => D();
+        field 'percent'     => D();
+        field 'pid'         => D();
+        field 'src'         => D();
+        field 'start_tm'    => D();
+        field 'state'       => D();
+        field 'title'       => D();
+        field 'tot_percent' => D();
+        field 'user'        => D();
+
+        etc();
+    };
+
+    is(my $tasks = $fortimanager->list_tasks(),
+        bag {
+            all_items $task_check;
+
+            end();
+        },
+        'list_tasks ok');
+
+    SKIP: {
+        skip "get_task tests because none available"
+            unless $tasks->@* > 0;
+
+        is($fortimanager->get_task($tasks->[0]->{id}),
+            $task_check,
+            'get_task ok');
+    }
+
     ok($fortimanager->delete_policy_package(
         $ENV{NET_FORTINET_FORTIMANAGER_POLICY}),
         'delete_policy_package ok');

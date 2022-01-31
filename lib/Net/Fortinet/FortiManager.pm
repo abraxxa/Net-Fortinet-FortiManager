@@ -888,6 +888,30 @@ sub install_policy_package ($self, $name, $data) {
         $params);
 }
 
+=method list_tasks
+
+Takes optional parameters.
+
+Returns an arrayref of tasks.
+
+=cut
+
+sub list_tasks ($self, $params = {}) {
+    $self->exec_method('get', '/task/task', $params);
+}
+
+=method get_task
+
+Takes a task id and an optional parameter hashref.
+
+Returns its data as a hashref.
+
+=cut
+
+sub get_task ($self, $id, $params = {}) {
+    $self->exec_method('get', '/task/task/' . $id, $params);
+}
+
 =method list_firewall_policies
 
 Takes a package name and optional parameters.
