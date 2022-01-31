@@ -816,6 +816,10 @@ Returns true on success.
 
 Throws an exception on error.
 
+The firewall policies are configured depending on the 'ngfw-mode'.
+For profile-based policy packages you have to use the 'policy' methods,
+for policy-based the 'security_policy' methods.
+
 =cut
 
 sub create_policy_package ($self, $name, $data) {
@@ -945,6 +949,93 @@ Throws an exception on error.
 sub delete_firewall_policy ($self, $pkg, $id) {
     $self->exec_method('delete', '/pm/config/adom/' . $self->adom .
         '/pkg/' .  $pkg . '/firewall/policy/' . $id);
+}
+
+=method list_firewall_security_policies
+
+Takes a package name and optional parameters.
+
+Returns an arrayref of firewall security policies.
+
+=cut
+
+sub list_firewall_security_policies ($self, $pkg, $params = {}) {
+    $self->exec_method('get', '/pm/config/adom/' . $self->adom .
+        '/pkg/' .  $pkg . '/firewall/security-policy', $params);
+}
+
+=method get_firewall_security_policy
+
+Takes a policy package name, a firewall security policy id and an optional
+parameter hashref.
+
+Returns its data as a hashref.
+
+=cut
+
+sub get_firewall_security_policy ($self, $pkg, $id, $params = {}) {
+    $self->exec_method('get', '/pm/config/adom/' . $self->adom .
+        '/pkg/' .  $pkg . '/firewall/security-policy/' . $id, $params);
+}
+
+
+=method create_firewall_security_policy
+
+Takes a policy package name and a hashref of firewall security policy
+attributes.
+
+Returns the response data from the API on success which is a hashref
+containing only the policyid.
+
+Throws an exception on error.
+
+=cut
+
+sub create_firewall_security_policy ($self, $pkg, $data) {
+    my $params = {
+        data => [{
+            $data->%*,
+        }],
+    };
+    $self->exec_method('add', '/pm/config/adom/' . $self->adom .
+        '/pkg/' .  $pkg . '/firewall/security-policy', $params);
+}
+
+=method update_firewall_security_policy
+
+Takes a policy package name, a firewall security policy id and a hashref of
+firewall security policy attributes.
+
+Returns the response data from the API on success which is a hashref
+containing only the policyid.
+
+Throws an exception on error.
+
+=cut
+
+sub update_firewall_security_policy ($self, $pkg, $id, $data) {
+    my $params = {
+        data => {
+            $data->%*,
+        },
+    };
+    $self->exec_method('update', '/pm/config/adom/' . $self->adom .
+        '/pkg/' .  $pkg . '/firewall/security-policy/' . $id , $params);
+}
+
+=method delete_firewall_security_policy
+
+Takes a policy package name and a firewall security policy id.
+
+Returns true on success.
+
+Throws an exception on error.
+
+=cut
+
+sub delete_firewall_security_policy ($self, $pkg, $id) {
+    $self->exec_method('delete', '/pm/config/adom/' . $self->adom .
+        '/pkg/' .  $pkg . '/firewall/security-policy/' . $id);
 }
 
 1;
