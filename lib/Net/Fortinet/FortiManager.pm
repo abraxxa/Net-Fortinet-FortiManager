@@ -1084,4 +1084,25 @@ sub delete_firewall_security_policy ($self, $pkg, $id) {
         '/pkg/' .  $pkg . '/firewall/security-policy/' . $id);
 }
 
+=head1 TESTS
+
+To run the live API tests the following environment variables need to be set:
+
+=over
+
+=item NET_FORTINET_FORTIMANAGER_HOSTNAME
+
+=item NET_FORTINET_FORTIMANAGER_USERNAME
+
+=item NET_FORTINET_FORTIMANAGER_PASSWORD
+
+=item NET_FORTINET_FORTIMANAGER_POLICY
+
+=back
+
+Several network objects are created as well as a policy package named by the
+NET_FORTINET_FORTIMANAGER_POLICY environment variable.
+
+=cut
+
 1;
