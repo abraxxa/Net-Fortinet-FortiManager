@@ -64,33 +64,33 @@ my %policy_package;
 
 END {
     say 'deleting created objects';
-    for (keys %firewall_address) {
+    for (keys %policy_package) {
         say "\t$_";
-        $fortimanager->delete_firewall_address($_);
+        $fortimanager->delete_policy_package($_);
     }
     for (keys %firewall_address_group) {
         say "\t$_";
         $fortimanager->delete_firewall_address_group($_);
     }
-    for (keys %firewall_ipv6_address) {
+    for (keys %firewall_address) {
         say "\t$_";
-        $fortimanager->delete_firewall_ipv6_address($_);
+        $fortimanager->delete_firewall_address($_);
     }
     for (keys %firewall_ipv6_address_group) {
         say "\t$_";
         $fortimanager->delete_firewall_ipv6_address_group($_);
     }
-    for (keys %firewall_service) {
+    for (keys %firewall_ipv6_address) {
         say "\t$_";
-        $fortimanager->delete_firewall_service($_);
+        $fortimanager->delete_firewall_ipv6_address($_);
     }
     for (keys %firewall_service_group) {
         say "\t$_";
         $fortimanager->delete_firewall_service_group($_);
     }
-    for (keys %policy_package) {
+    for (keys %firewall_service) {
         say "\t$_";
-        $fortimanager->delete_policy_package($_);
+        $fortimanager->delete_firewall_service($_);
     }
 
     say 'logging out';
