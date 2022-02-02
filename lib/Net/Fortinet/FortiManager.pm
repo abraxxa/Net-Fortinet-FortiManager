@@ -1103,6 +1103,10 @@ To run the live API tests the following environment variables need to be set:
 Several network objects are created as well as a policy package named by the
 NET_FORTINET_FORTIMANAGER_POLICY environment variable.
 
+The test aborts if any of the objects can't be created, most likely if it
+already exists.
+All objects are deleted at the end of the test run, even when it aborts.
+
 =cut
 
 1;
