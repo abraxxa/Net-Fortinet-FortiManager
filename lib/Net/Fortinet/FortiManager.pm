@@ -344,7 +344,7 @@ sub create_firewall_address ($self, $name, $data) {
             name => $name,
         }],
     };
-    $self->exec_method('set', '/pm/config/adom/' . $self->adom .
+    $self->exec_method('add', '/pm/config/adom/' . $self->adom .
         '/obj/firewall/address', $params);
 }
 
@@ -424,7 +424,7 @@ sub create_firewall_address_group ($self, $name, $data) {
             name => $name,
         }],
     };
-    $self->exec_method('set', '/pm/config/adom/' . $self->adom .
+    $self->exec_method('add', '/pm/config/adom/' . $self->adom .
         '/obj/firewall/addrgrp', $params);
 }
 
@@ -504,7 +504,7 @@ sub create_firewall_ipv6_address ($self, $name, $data) {
             name => $name,
         }],
     };
-    $self->exec_method('set', '/pm/config/adom/' . $self->adom .
+    $self->exec_method('add', '/pm/config/adom/' . $self->adom .
         '/obj/firewall/address6', $params);
 }
 
@@ -584,7 +584,7 @@ sub create_firewall_ipv6_address_group ($self, $name, $data) {
             name => $name,
         }],
     };
-    $self->exec_method('set', '/pm/config/adom/' . $self->adom .
+    $self->exec_method('add', '/pm/config/adom/' . $self->adom .
         '/obj/firewall/addrgrp6', $params);
 }
 
@@ -664,7 +664,7 @@ sub create_firewall_service ($self, $name, $data) {
             name => $name,
         }],
     };
-    $self->exec_method('set', '/pm/config/adom/' . $self->adom .
+    $self->exec_method('add', '/pm/config/adom/' . $self->adom .
         '/obj/firewall/service/custom', $params);
 }
 
@@ -744,7 +744,7 @@ sub create_firewall_service_group ($self, $name, $data) {
             name => $name,
         }],
     };
-    $self->exec_method('set', '/pm/config/adom/' . $self->adom .
+    $self->exec_method('add', '/pm/config/adom/' . $self->adom .
         '/obj/firewall/service/group', $params);
 }
 
