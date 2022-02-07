@@ -220,7 +220,7 @@ subtest_buffered 'IPv4 objects' => sub {
     $firewall_address{host_test1} = 1;
 
     ok($fortimanager->create_firewall_address('net_test1', {
-        subnet => '192.0.2.10/255.255.255.0',
+        subnet => '192.0.2.0/255.255.255.0',
     }), 'create_firewall_address for network ok');
     $firewall_address{net_test1} = 1;
 
