@@ -787,7 +787,7 @@ sub delete_firewall_service_group ($self, $name) {
 
 Takes optional parameters.
 
-Returns an arrayref of firewall policies.
+Returns an arrayref of policy packages.
 
 =cut
 
