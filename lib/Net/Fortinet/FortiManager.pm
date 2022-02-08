@@ -891,7 +891,7 @@ sub delete_policy_package ($self, $name) {
 
 Takes a policy package name and a hashref of parameters.
 
-Returns true on success.
+Returns the task id on success.
 
 Throws an exception on error.
 
@@ -905,8 +905,10 @@ sub install_policy_package ($self, $name, $data = {}) {
             pkg     => $name,
         },
     };
-    $self->exec_method('exec', '/securityconsole/install/package',
+    my $res = $self->exec_method('exec', '/securityconsole/install/package',
         $params);
+
+    return $res->{task};
 }
 
 =method list_tasks
