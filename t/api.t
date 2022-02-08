@@ -107,7 +107,7 @@ like (
 );
 
 is($fortimanager->exec_method('get',
-    '/pm/config/adom/root/obj/firewall/address'),
+    '/pm/config/adom/' . $fortimanager->adom . '/obj/firewall/address'),
     bag {
         all_items hash {
             etc();
@@ -115,7 +115,7 @@ is($fortimanager->exec_method('get',
     }, 'exec_method without parameters response ok');
 
 is($fortimanager->exec_method('get',
-    '/pm/config/adom/root/obj/firewall/address',
+    '/pm/config/adom/' . $fortimanager->adom . '/obj/firewall/address',
     {
         fields => [qw( name type )],
     }),
@@ -131,10 +131,12 @@ is($fortimanager->exec_method('get',
 is($fortimanager->exec_method_multi('get',
     [{
         fields  => [qw( name type )],
-        url     => '/pm/config/adom/root/obj/firewall/address',
+        url     => '/pm/config/adom/' . $fortimanager->adom .
+                   '/obj/firewall/address',
     }, {
         fields  => [qw( name protocol )],
-        url     => '/pm/config/adom/root/obj/firewall/service/custom',
+        url     => '/pm/config/adom/' . $fortimanager->adom .
+                   '/obj/firewall/service/custom',
     }]),
     bag {
         all_items hash {
@@ -160,13 +162,15 @@ is($fortimanager->exec_method_multi('get',
         # test if results are returned in request order
 
         item hash {
-            field 'url' => '/pm/config/adom/root/obj/firewall/address';
+            field 'url' => '/pm/config/adom/' . $fortimanager->adom .
+                '/obj/firewall/address';
 
             etc();
         };
 
         item hash {
-            field 'url' =>  '/pm/config/adom/root/obj/firewall/service/custom';
+            field 'url' =>  '/pm/config/adom/' . $fortimanager->adom .
+                '/obj/firewall/service/custom';
 
             etc();
         };
@@ -178,7 +182,8 @@ like (
     dies {
         $fortimanager->exec_method_multi('get',
             [{
-                url => '/pm/config/adom/root/obj/firewall/address',
+                url => '/pm/config/adom/' . $fortimanager->adom .
+                    '/obj/firewall/address',
             }, {
                 url => '/does/not/exist',
             }, {
