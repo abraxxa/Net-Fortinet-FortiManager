@@ -897,7 +897,7 @@ Throws an exception on error.
 
 =cut
 
-sub install_policy_package ($self, $name, $data) {
+sub install_policy_package ($self, $name, $data = {}) {
     my $params = {
         data => {
             $data->%*,
