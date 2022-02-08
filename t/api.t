@@ -15,8 +15,8 @@ like (
     dies {
         my $fortimanager = Net::Fortinet::FortiManager->new(
             server      => 'https://' . $ENV{NET_FORTINET_FORTIMANAGER_HOSTNAME},
-            user        => 'foo',
-            passwd      => 'bar',
+            user        => 'net-fortinet-fortimanager-test-nonexisting',
+            passwd      => 'invalid',
             clientattrs => {
                 insecure => 1,
             },
