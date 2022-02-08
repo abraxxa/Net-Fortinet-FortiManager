@@ -935,6 +935,31 @@ sub get_task ($self, $id, $params = {}) {
     $self->exec_method('get', '/task/task/' . $id, $params);
 }
 
+=method wait_for_task
+
+Takes a task id and checks its status every second until its percent
+have reached 100 and return the status.
+Takes an optional callback coderef which is called for every check with the
+task as argument.
+
+=cut
+
+sub wait_for_task($self, $taskid, $callback = undef) {
+    croak "task-id missing"
+        unless defined $taskid;
+    croak "callback must be a coderef"
+        if defined $callback && ref $callback ne 'CODE';
+
+    my $task;
+    while (($task = $self->get_task($taskid))
+        && $task->{percent} != 100) {
+        &$callback($task)
+            if defined $callback;
+        sleep 1;
+    }
+    return $task;
+}
+
 =method list_firewall_policies
 
 Takes a package name and optional parameters.
