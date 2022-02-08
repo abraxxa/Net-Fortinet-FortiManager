@@ -8,7 +8,7 @@ use feature 'signatures';
 use Types::Standard qw( ArrayRef HashRef InstanceOf Str );
 use Types::Common::Numeric qw( PositiveInt );
 use Carp qw( croak );
-use List::Util qw( all any );
+use List::Util qw( all any none );
 
 no warnings "experimental::signatures";
 
@@ -241,7 +241,9 @@ sub exec_method_multi ($self, $method, $params) {
 
 =method login
 
-Logs into the Fortinet FortiManager.
+Logs into the Fortinet FortiManager and switches to the first available ADOM
+if the currently set L<adom> isn't available, for example because the user
+is limited to one or more ADOMs.
 
 =cut
 
@@ -260,6 +262,11 @@ sub login ($self) {
     $self->_sessionid($res->data->{session});
 
     $self->_set_adoms($self->list_adoms_by_name);
+
+    # switch to first ADOM if the currently set ADOM isn't available
+    if (none { $_ eq $self->adom } $self->adoms->@*) {
+        $self->adom($self->adoms->[0]);
+    }
 
     return 1;
 }

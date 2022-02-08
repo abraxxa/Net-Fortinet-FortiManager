@@ -7,6 +7,8 @@ Revision history for Net-Fortinet-FortiManager
     - add list_adoms_by_name
       as a replacement for the changed list_adoms
       returns the names sorted for a stable order
+    - login now switches to the first available ADOM
+      if the currently set adom isn't available
 
 0.002000  2022-02-02 11:58:54+01:00 Europe/Vienna
     - fix create methods used the 'set' method instead of 'add'
