@@ -300,6 +300,23 @@ sub list_adoms ($self, $params = {}) {
     $self->exec_method('get', '/dvmdb/adom', $params);
 }
 
+=method list_adoms_by_name
+
+Returns an arrayref of ADOMs sorted by name.
+
+=cut
+
+sub list_adoms_by_name ($self) {
+    my @adoms =
+        sort
+        map {
+            $_->{name}
+        } $self->list_adoms({
+            fields  => [qw( name )],
+        })->@*;
+    return \@adoms;
+}
+
 =method list_firewall_addresses
 
 Returns an arrayref of firewall addresses.
