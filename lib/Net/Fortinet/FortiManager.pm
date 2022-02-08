@@ -259,7 +259,7 @@ sub login ($self) {
 
     $self->_sessionid($res->data->{session});
 
-    $self->_set_adoms($self->list_adoms);
+    $self->_set_adoms($self->list_adoms_by_name);
 
     return 1;
 }
@@ -290,17 +290,14 @@ sub get_sys_status ($self) {
 
 =method list_adoms
 
-Returns an arrayref of ADOMs by name.
+Takes an optional parameter hashref.
+
+Returns an arrayref of ADOMs.
 
 =cut
 
-sub list_adoms ($self) {
-    my @adoms = map {
-        $_->{name}
-    } $self->exec_method('get', '/dvmdb/adom', {
-        fields  => [qw( name )],
-    })->@*;
-    return \@adoms;
+sub list_adoms ($self, $params = {}) {
+    $self->exec_method('get', '/dvmdb/adom', $params);
 }
 
 =method list_firewall_addresses
