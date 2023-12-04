@@ -644,6 +644,86 @@ sub delete_firewall_ipv6_address_group ($self, $name) {
         '/obj/firewall/addrgrp6/' . $name);
 }
 
+=method list_firewall_wildcard_fqdns
+
+Returns an arrayref of firewall wildcard FQDN objects.
+
+=cut
+
+sub list_firewall_wildcard_fqdns ($self, $params = {}) {
+    $self->exec_method('get', '/pm/config/adom/' . $self->adom .
+        '/obj/firewall/wildcard-fqdn/custom', $params);
+}
+
+=method get_firewall_wildcard_fqdn
+
+Takes a firewall wildcard FQDN name and an optional parameter hashref.
+
+Returns its data as a hashref.
+
+=cut
+
+sub get_firewall_wildcard_fqdn ($self, $name, $params = {}) {
+    $self->exec_method('get', '/pm/config/adom/' . $self->adom .
+        '/obj/firewall/wildcard-fqdn/custom/'. $name, $params);
+}
+
+=method create_firewall_wildcard_fqdn
+
+Takes a firewall wildcard FQDN name and a hashref of wildcard FQDN config.
+
+Returns true on success.
+
+Throws an exception on error.
+
+=cut
+
+sub create_firewall_wildcard_fqdn ($self, $name, $data) {
+    my $params = {
+        data => [{
+            $data->%*,
+            name => $name,
+        }],
+    };
+    $self->exec_method('add', '/pm/config/adom/' . $self->adom .
+        '/obj/firewall/wildcard-fqdn/custom', $params);
+}
+
+=method update_firewall_wildcard_fqdn
+
+Takes a firewall wildcard FQDN name and a hashref of wildcard FQDN config.
+
+Returns true on success.
+
+Throws an exception on error.
+
+=cut
+
+sub update_firewall_wildcard_fqdn ($self, $name, $data) {
+    my $params = {
+        data => {
+            $data->%*,
+        },
+    };
+    $self->exec_method('update', '/pm/config/adom/' . $self->adom .
+        '/obj/firewall/wildcard-fqdn/custom/' . $name, $params);
+}
+
+=method delete_firewall_wildcard_fqdn
+
+Takes a firewall wildcard FQDN name.
+
+Returns true on success.
+
+Throws an exception on error.
+
+=cut
+
+sub delete_firewall_wildcard_fqdn ($self, $name) {
+    $self->exec_method('delete', '/pm/config/adom/' . $self->adom .
+        '/obj/firewall/wildcard-fqdn/custom/' . $name);
+}
+
 =method list_firewall_services
 
 Returns an arrayref of firewall services.
