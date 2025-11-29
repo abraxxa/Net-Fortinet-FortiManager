@@ -199,12 +199,15 @@ like (
     'calling exec_method_multi with a nonexisting url throws correct exception'
 );
 
-is($fortimanager->get_sys_status, hash {
+is(my $sys_status = $fortimanager->get_sys_status, hash {
     field 'Hostname'    => D();
     field 'Version'     => D();
 
     etc();
 }, 'sys_status response ok');
+
+my $version = $sys_status->{Version};
+diag "running against version $version";
 
 is($fortimanager->list_adoms, bag {
     all_items D();
