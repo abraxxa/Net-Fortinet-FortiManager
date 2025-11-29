@@ -18,7 +18,7 @@ like (
             user        => 'net-fortinet-fortimanager-test-nonexisting',
             passwd      => 'invalid',
             clientattrs => {
-                insecure => 1,
+                verify_SSL => 0,
             },
         );
         $fortimanager->login;
@@ -32,7 +32,7 @@ my $fortimanager = Net::Fortinet::FortiManager->new(
     user        => $ENV{NET_FORTINET_FORTIMANAGER_USERNAME},
     passwd      => $ENV{NET_FORTINET_FORTIMANAGER_PASSWORD},
     clientattrs => {
-        insecure => 1,
+        verify_SSL => 0,
     },
 );
 
