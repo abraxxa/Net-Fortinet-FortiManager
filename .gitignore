@@ -1,2 +1,3 @@
 /.build/
 /Net-Fortinet-FortiManager-*
+.envrc
