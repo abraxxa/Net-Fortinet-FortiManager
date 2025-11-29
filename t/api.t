@@ -23,7 +23,7 @@ like (
         );
         $fortimanager->login;
     },
-    qr/^jsonrpc error \(-11\): /,
+    qr/^jsonrpc error \(-\d+\): /,
     'login with incorrect credentials throws exception'
 );
 
@@ -107,7 +107,7 @@ like (
     dies {
         $fortimanager->exec_method('get', '/does/not/exist');
     },
-    qr/^http error \(503\): /,
+    qr/^http error \(503\): |jsonrpc error \(-6\): Invalid url/,
     'calling exec_method with a nonexisting url throws correct exception'
 );
 
@@ -195,7 +195,7 @@ like (
                 url => '/does/not/exist/either',
             }]),
     },
-    qr#^jsonrpc errors: /does/not/exist: \(-11\) No permission for the resource, /does/not/exist/either: \(-11\) No permission for the resource#,
+    qr#^jsonrpc errors: /does/not/exist: \(-11\) No permission for the resource, /does/not/exist/either: \(-11\) No permission for the resource|jsonrpc error: response not in expected format:#,
     'calling exec_method_multi with a nonexisting url throws correct exception'
 );
 
@@ -455,6 +455,10 @@ subtest_buffered 'wildcard FQDN objects' => sub {
 };
 
 subtest_buffered 'service objects' => sub {
+    my $firewall_service_protocol = $fortimanager->has_firewall_service_udp_lite_support
+        ? 'TCP/UDP/UDP-Lite/SCTP'
+        : 'TCP/UDP/SCTP';
+
     is($fortimanager->list_firewall_services,
         bag {
             all_items hash {
@@ -469,13 +473,13 @@ subtest_buffered 'service objects' => sub {
         'list_firewall_services ok');
 
     ok($fortimanager->create_firewall_service('test_tcp_1234', {
-        protocol        => 'TCP/UDP/SCTP',
+        protocol        => $firewall_service_protocol,
         'tcp-portrange' => '1234'
     }), 'create_firewall_service for TCP service ok');
     $firewall_service{test_tcp_1234} = 1;
 
     ok($fortimanager->create_firewall_service('test_udp_1234', {
-        protocol        => 'TCP/UDP/SCTP',
+        protocol        => $firewall_service_protocol,
         'udp-portrange' => '1234'
     }), 'create_firewall_service for UDP service ok');
     $firewall_service{test_udp_1234} = 1;
@@ -488,7 +492,7 @@ subtest_buffered 'service objects' => sub {
 
     is($fortimanager->get_firewall_service('test_tcp_1234'),
         hash {
-            field 'protocol'        => 'TCP/UDP/SCTP';
+            field 'protocol'        => $firewall_service_protocol;
             field 'tcp-portrange'   => array {
                 item '1234';
 
