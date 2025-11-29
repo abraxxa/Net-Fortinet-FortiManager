@@ -295,6 +295,29 @@ sub get_sys_status ($self) {
     return $self->exec_method('get', '/sys/status');
 }
 
+=method has_firewall_service_udp_lite_support
+
+Returns true if the version supports UDP-Lite.
+This was introduced in version 7.6.0.
+
+=cut
+
+sub has_firewall_service_udp_lite_support ($self) {
+    state $rv;
+    return $rv
+        if defined $rv;
+
+    my $sys_status = $self->get_sys_status;
+
+    my $major_version = $sys_status->{Major};
+    my $minor_version = $sys_status->{Minor};
+
+    $rv = ($major_version == 7 && $minor_version >= 6)
+        || $major_version > 7;
+
+    return $rv;
+}
+
 =method list_adoms
 
 Takes an optional parameter hashref.

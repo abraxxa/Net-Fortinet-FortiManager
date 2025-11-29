@@ -3,6 +3,7 @@ Revision history for Net-Fortinet-FortiManager
 {{ $NEXT }}
     - fix running tests against FortiManager with invalid certificate
       mainly self-signed
+    - add has_firewall_service_udp_lite_support method
 
 0.004000  2023-12-04 18:16:30+01:00 Europe/Vienna
     - add wildcard FQDN object support
